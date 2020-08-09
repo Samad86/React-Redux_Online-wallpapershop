@@ -52,15 +52,16 @@ function Categories({ items, onClickItem }) {
         >
           Все покрытия
         </li>
-        {items.map((name, index) => (
-          <li
-            className={activeItem === index ? "active" : ""}
-            onClick={() => onSelectItem(index)}
-            key={`${name}_${index}`}
-          >
-            {name}
-          </li>
-        ))}
+        {items &&
+          items.map((name, index) => (
+            <li
+              className={activeItem === index ? "active" : ""}
+              onClick={() => onSelectItem(index)}
+              key={`${name}_${index}`}
+            >
+              {name}
+            </li> // {items && items.map()} - проверка на null или undefined для items
+          ))}
       </ul>
     </div>
   );
