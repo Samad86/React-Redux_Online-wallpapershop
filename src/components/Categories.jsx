@@ -39,9 +39,7 @@ import React, { useState } from "react";
 function Categories({ items, onClickItem }) {
   const [activeItem, setActiveItem] = useState(null);
 
-  const onSelectItem = (index) => {
-    setActiveItem(index);
-  };
+  const onSelectItem = (index) => setActiveItem(index);
 
   return (
     <div className="categories">
