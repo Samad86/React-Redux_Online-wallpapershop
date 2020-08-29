@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import classNames from "classnames";
 
 function WallpaperBlock({ imageUrl, name, price, types, sizes }) {
@@ -36,7 +37,7 @@ function WallpaperBlock({ imageUrl, name, price, types, sizes }) {
               key={size}
               onClick={() => onSelectSize(index)}
               className={classNames({
-                active: activeSize === size, // если activeSize === index, то у элемента будет class = "active"
+                active: activeSize === index, // если activeSize === index, то у элемента будет class = "active"
                 disabled: !sizes.includes(size),
               })}
             >
@@ -70,5 +71,20 @@ function WallpaperBlock({ imageUrl, name, price, types, sizes }) {
     </div>
   );
 }
+
+WallpaperBlock.propTypes = {
+  imageUrl: PropTypes.string.isRequired, // isRequired - тип imageUrl обязательно должен быть строкой
+  name: PropTypes.string.isRequired,
+  price: PropTypes.number.isRequired,
+  types: PropTypes.arrayOf(PropTypes.number).isRequired, // тип types обязательно должен быть массивом чисел
+  sizes: PropTypes.arrayOf(PropTypes.number).isRequired,
+};
+
+WallpaperBlock.defaultProps = {
+  name: "---",
+  price: 0,
+  types: [],
+  sizes: [],
+}; // значения пропсов по умолчанию
 
 export default WallpaperBlock;
