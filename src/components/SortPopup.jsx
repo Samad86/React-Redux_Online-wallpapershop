@@ -36,7 +36,7 @@ path является массивом. Например, при клике по
     setVisiblePopup(false); // при выборе нужной категории (при клике на нее) popup окно скрывается
   };
 
-  const activeLabel = items[activeItem]; // при выборе нужной категории (при клике на нее) отображается выбранная категория
+  const activeLabel = items[activeItem].name; // при выборе нужной категории (при клике на нее) отображается выбранная категория
 
   return (
     // ref={sortRef} - короткая запись функции ref={(ref) => {sortRef.current = ref}} - в качестве параметра ref передаем в функцию "sort"
@@ -62,13 +62,13 @@ path является массивом. Например, при клике по
         <div className="sort__popup">
           <ul>
             {items &&
-              items.map((name, index) => (
+              items.map((obj, index) => (
                 <li
                   className={activeItem === index ? "active" : ""}
                   onClick={() => onSelectItem(index)}
-                  key={`${name}_${index}`}
+                  key={`${obj.type}_${index}`}
                 >
-                  {name}
+                  {obj.name}
                 </li> // {items && items.map()} - проверка на null или undefined для items
               ))}
           </ul>
