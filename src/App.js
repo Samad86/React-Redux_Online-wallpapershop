@@ -1,75 +1,84 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route } from "react-router-dom";
 import axios from "axios";
-import { connect } from "react-redux"; // connect объединит компонент App с Redux
+import { useSelector, useDispatch } from "react-redux";
 
 import { Header } from "./components"; // webpack при сборке сначала ищет файл index.js по указанному пути
 import { Home, Cart } from "./pages";
-import { setWallpapers as setWallpapersAction } from "./redux/actions/wallpapers";
-
-// function App() {
-//   /* Запрос на фейковый json-сервер (fetch). Для примера - без использования библиотеки axios.
-//   fetch("http://localhost:3000/db.json").then(response => response.json()).then(json => console.log(json))
-//   В консоль выведется {wallpapers [...]}.
-//   Для отправки при первом рендере приложения запроса на сервер и получения от него данных используем хук useEffect. */
-
-//   useEffect(() => {
-//     /* Запрос на json-сервер с помощью fetch
-//     fetch("http://localhost:3000/db.json")
-//       .then((response) => response.json())
-//       .then((json) => setWallpapers(json.wallpapers));*/
-
-//     /* GET-запрос при помощи axios возвращает уже готовый объект в формате JSON (в свойстве data). В случае с fetch возвращается Response со свойством body: ReadableString, далее его нужно конвертировать в формат JSON */
-
-//     axios
-//       .get("http://localhost:3000/db.json")
-//       .then(({ data }) => setWallpapers(data.wallpapers));
-//   }, []); // выполнение эффекта только 1 раз при первом рендере
-
-//   return;
-// }
+import { setWallpapers } from "./redux/actions/wallpapers";
 
 // Классовый компонент
-class App extends React.Component {
-  componentDidMount() {
-    axios.get("http://localhost:3000/db.json").then(({ data }) => {
-      this.props.setWallpapers(data.wallpapers);
-    });
-  }
+// class App extends React.Component {
+//   componentDidMount() {
+//     axios.get("http://localhost:3000/db.json").then(({ data }) => {
+//       this.props.setWallpapers(data.wallpapers);
+//     });
+//   }
 
-  render() {
-    return (
-      <div className="wrapper">
-        <Header />
-        <div className="content">
-          <Route
-            exact
-            path="/"
-            render={() => <Home items={this.props.items} />}
-          />
-          <Route path="/cart" component={Cart} />
-        </div>
-      </div> // render - для передачи данных в компонент <Home />
-    );
-  }
+//   render() {
+//     return (
+//       <div className="wrapper">
+//         <Header />
+//         <div className="content">
+//           <Route
+//             exact
+//             path="/"
+//             render={() => <Home items={this.props.items} />}
+//           />
+//           <Route path="/cart" component={Cart} />
+//         </div>
+//       </div> // render - для передачи данных в компонент <Home />
+//     );
+//   }
+// }
+
+// const mapStateToProps = (state) => {
+//   return {
+//     items: state.wallpapers.items, // из объекта state вытаскиваем редьюсер wallpapers и оттуда - свойство items и передаем в свойство items
+//     filters: state.filters,
+//   };
+// };
+
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     setWallpapers: (items) => dispatch(setWallpapersAction(items)),
+//   };
+// };
+
+// export default connect(mapStateToProps, mapDispatchToProps)(App);
+// /*
+// connect используется для создания компонентов-контейнеры, которые подключены к хранилищу, возвращает компонент высшего порядка. В Connect передается базовый компонент App.
+// Аргументом connect является функция MapStateToProps - результатом передачи этого аргумента является подписка компонента-контейнера на обновления хранилища. Функция mapStateToProps будет вызываться каждый раз, когда состояние хранилища изменяется. И когда хранилище изменяется, будет происходить ререндер компонента App, если это нужно. Функция mapStateToProps возвращает какие-то данные из хранилища.
+// Вторым аргументом connect является функция mapDispatchToProps - внедрение метода хранилища dispatch() в качестве свойства для компонента, генераторы действий. Функция mapDispatchToProps возвращает какие-то actions.
+// */
+
+// Функциональный компонент
+function App() {
+  const dispatch = useDispatch(); // useDispatch - получение функции store.dispatch в компоненте (аналог mapDispatchToProps в классовом компоненте). Хук возвращает ссылку на dispatch функцию из Redux. Используется для отправки действий.
+
+  const { items } = useSelector(({ wallpapers, filters }) => {
+    return {
+      items: wallpapers.items,
+      sortBy: filters.sortBy,
+    };
+  }); // useSelector - маппинг значения из store (аналог mapStateToProps в классовом компоненте). В качестве аргумента селектор будет передавать Redux state и будет вызываться когда компонент перерендеривается, так же он подписывается на store и вызывается каждый раз при изменении. Однако селектор будет производить сравнение (по умолчанию является строгим ===) предыдущего значения результата селектора и текущего значения результата. Если они отличаются, компонент будет вынужден повторно выполнить рендеринг. С useSelector() возвращение нового объекта каждый раз по умолчанию будет вызывать повторный рендеринг.
+  // Указываем конкретно, что вытаскиваем из хранилища - wallpapers, filters (а не весь state), чтобы избежать лишнего ререндера.
+
+  useEffect(() => {
+    axios.get("http://localhost:3000/db.json").then(({ data }) => {
+      dispatch(setWallpapers(data.wallpapers));
+    });
+  }, []); // выполнение эффекта только 1 раз при первом рендере
+
+  return (
+    <div className="wrapper">
+      <Header />
+      <div className="content">
+        <Route exact path="/" render={() => <Home items={items} />} />
+        <Route path="/cart" component={Cart} />
+      </div>
+    </div>
+  );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    items: state.wallpapers.items, // из объекта state вытаскиваем редьюсер wallpapers и оттуда - свойство items и передаем в свойство items
-    filters: state.filters,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setWallpapers: (items) => dispatch(setWallpapersAction(items)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
-/*
-connect используется для создания компонентов-контейнеры, которые подключены к хранилищу, возвращает компонент высшего порядка. В Connect передается базовый компонент App.
-Аргументом connect является функция MapStateToProps - результатом передачи этого аргумента является подписка компонента-контейнера на обновления хранилища. Функция mapStateToProps будет вызываться каждый раз, когда состояние хранилища изменяется. И когда хранилище изменяется, будет происходить ререндер компонента App, если это нужно. Функция mapStateToProps возвращает какие-то данные из хранилища.
-Вторым аргументом connect является функция mapDispatchToProps - внедрение метода хранилища dispatch() в качестве свойства для компонента, генераторы действий. Функция mapDispatchToProps возвращает какие-то actions.
-*/
+export default App;
