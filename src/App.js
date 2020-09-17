@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Route } from "react-router-dom";
 import axios from "axios";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { Header } from "./components"; // webpack при сборке сначала ищет файл index.js по указанному пути
 import { Home, Cart } from "./pages";
@@ -56,14 +56,6 @@ import { setWallpapers } from "./redux/actions/wallpapers";
 function App() {
   const dispatch = useDispatch(); // useDispatch - получение функции store.dispatch в компоненте (аналог mapDispatchToProps в классовом компоненте). Хук возвращает ссылку на dispatch функцию из Redux. Используется для отправки действий.
 
-  const { items } = useSelector(({ wallpapers, filters }) => {
-    return {
-      items: wallpapers.items,
-      sortBy: filters.sortBy,
-    };
-  }); // useSelector - маппинг значения из store (аналог mapStateToProps в классовом компоненте). В качестве аргумента селектор будет передавать Redux state и будет вызываться когда компонент перерендеривается, так же он подписывается на store и вызывается каждый раз при изменении. Однако селектор будет производить сравнение (по умолчанию является строгим ===) предыдущего значения результата селектора и текущего значения результата. Если они отличаются, компонент будет вынужден повторно выполнить рендеринг. С useSelector() возвращение нового объекта каждый раз по умолчанию будет вызывать повторный рендеринг.
-  // Указываем конкретно, что вытаскиваем из хранилища - wallpapers, filters (а не весь state), чтобы избежать лишнего ререндера.
-
   useEffect(() => {
     axios.get("http://localhost:3000/db.json").then(({ data }) => {
       dispatch(setWallpapers(data.wallpapers));
@@ -74,7 +66,7 @@ function App() {
     <div className="wrapper">
       <Header />
       <div className="content">
-        <Route exact path="/" render={() => <Home items={items} />} />
+        <Route exact path="/" component={Home} />
         <Route path="/cart" component={Cart} />
       </div>
     </div>

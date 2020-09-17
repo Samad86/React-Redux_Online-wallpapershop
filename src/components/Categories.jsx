@@ -36,10 +36,15 @@ import React, { useState } from "react";
 }*/
 
 // Функциональный компонент:
-function Categories({ items, onClickItem }) {
+// React.memo() предотвращет ненужный ререндер Categories. React.memo() делает поверхностное сравнение пропсов. Если ссылка на пропсы не меняется, то повторный ререндер делать не будет
+const Categories = React.memo(function Categories({ items, onClickItem }) {
   const [activeItem, setActiveItem] = useState(null);
 
-  const onSelectItem = (index) => setActiveItem(index);
+  const onSelectItem = (index) => {
+    // выбор категории обоев пользователем: бумага, флизелин, винил, ...
+    setActiveItem(index); // сохраняем выбранную категорию в state
+    onClickItem(index); // из компонента Home
+  };
 
   return (
     <div className="categories">
@@ -63,6 +68,6 @@ function Categories({ items, onClickItem }) {
       </ul>
     </div>
   );
-}
+});
 
 export default Categories;

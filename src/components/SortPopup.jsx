@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
-function SortPopup({ items }) {
+// React.memo() предотвращет ненужный ререндер SortPopup. React.memo() делает поверхностное сравнение пропсов. Если ссылка на items не меняется, то повторный ререндер делать не будет
+const SortPopup = React.memo(function SortPopup({ items }) {
   const [visiblePopup, setVisiblePopup] = useState(false);
   /* Хук useRef позволяет получить ссылку над DOM элемент.
   const refContainer = useRef(initialValue)
@@ -76,6 +77,6 @@ path является массивом. Например, при клике по
       )}
     </div>
   );
-}
+});
 
 export default SortPopup;
