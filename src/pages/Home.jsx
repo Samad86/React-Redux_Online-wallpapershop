@@ -1,8 +1,14 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Categories, SortPopup, WallpaperBlock } from "../components";
+import {
+  Categories,
+  SortPopup,
+  WallpaperBlock,
+  WallpaperLoadingBlock,
+} from "../components";
 import { setCategory } from "../redux/actions/filters";
+import { fetchWallpapers } from "../redux/actions/wallpapers";
 
 const categoryNames = ["Бумага", "Флизелин", "Винил", "Акрил", "Текстиль"]; // выносим массив категорий, чтобы предотвратить ненужный ререндер. В items в функции Home() теперь всегда будет храниться одна и та же ссылка (даже когда компонент Home произведет ререндер)
 
@@ -19,6 +25,18 @@ function Home() {
   // Указываем конкретно, что вытаскиваем из хранилища - wallpapers, filters (а не весь state), чтобы избежать лишнего ререндера.
   // Возвращает массив
 
+  const isLoaded = useSelector(({ wallpapers }) => wallpapers.isLoaded);
+
+  const { category, sortBy } = useSelector(({ filters }) => filters);
+
+  // Фильтрация обоев по категориям покрытия.
+  // Когда пользователь выбирает категорию покрытий обоев (бумага, флизелин, винил, акрил или текстиль), т.е. происходит фильтрация товаров по выбранному покрытию, каждый раз отправляется запрос на сервер.
+  // В useEffect следим за свойствами category и sortBy.
+
+  useEffect(() => {
+    dispatch(fetchWallpapers());
+  }, []); // выполнение эффекта только 1 раз при первом рендере (отправка экшена). dispatch выполняет асинхронный экшен fetchWallpapers, который возвращает функцию
+
   const onSelectCategory = useCallback((index) => {
     dispatch(setCategory(index));
   }, []); // при первом рендере создается ссылка на функцию onSelectCategory и больше не меняется, предотвращается ненужный ререндер
@@ -31,9 +49,13 @@ function Home() {
       </div>
       <h2 className="content__title">Все обои</h2>
       <div className="content__items">
-        {items.map((obj) => (
-          <WallpaperBlock key={obj.id} {...obj} /> // передаем все свойства obj в компонент <WallpaperBlock />
-        ))}
+        {isLoaded
+          ? items.map((obj) => (
+              <WallpaperBlock key={obj.id} isLoading={true} {...obj} /> // передаем все свойства obj в компонент <WallpaperBlock />
+            ))
+          : Array(25)
+              .fill(0)
+              .map((_, index) => <WallpaperLoadingBlock key={index} />)}
       </div>
     </div>
   );

@@ -1,10 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Route } from "react-router-dom";
-import { useDispatch } from "react-redux";
 
 import { Header } from "./components"; // webpack при сборке сначала ищет файл index.js по указанному пути
 import { Home, Cart } from "./pages";
-import { fetchWallpapers } from "./redux/actions/wallpapers";
 
 // Классовый компонент
 // class App extends React.Component {
@@ -53,12 +51,6 @@ import { fetchWallpapers } from "./redux/actions/wallpapers";
 
 // Функциональный компонент
 function App() {
-  const dispatch = useDispatch(); // useDispatch - получение функции store.dispatch в компоненте (аналог mapDispatchToProps в классовом компоненте). Хук возвращает ссылку на dispatch функцию из Redux. Используется для отправки действий.
-
-  useEffect(() => {
-    dispatch(fetchWallpapers());
-  }, []); // выполнение эффекта только 1 раз при первом рендере (отправка экшена). dispatch выполняет асинхронный экшен fetchWallpapers, который возвращает функцию
-
   return (
     <div className="wrapper">
       <Header />
