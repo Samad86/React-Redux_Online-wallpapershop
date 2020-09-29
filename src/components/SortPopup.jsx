@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 
 // React.memo() предотвращет ненужный ререндер SortPopup. React.memo() делает поверхностное сравнение пропсов. Если ссылка на items не меняется, то повторный ререндер делать не будет
-const SortPopup = React.memo(function SortPopup({ items }) {
+const SortPopup = React.memo(function SortPopup({
+  items,
+  activeSortType,
+  onClickSortType,
+}) {
   const [visiblePopup, setVisiblePopup] = useState(false);
   /* Хук useRef позволяет получить ссылку над DOM элемент.
   const refContainer = useRef(initialValue)
   useRef возвращает изменяемый ref-объект, свойство current которого инициализируется переданным аргументом (initialValue). Возвращённый объект будет сохраняться в течение всего времени жизни компонента. */
-  const [activeItem, setActiveItem] = useState(0);
   const sortRef = useRef(); // в переменной sortRef хранится объект {current: undefined}; в свойстве current хранится актуальная ссылка на наше значение
 
   const toggleVisiblePopup = () => {
@@ -32,12 +36,13 @@ path является массивом. Например, при клике по
     document.body.addEventListener("click", handleOutsideClick);
   }, []);
 
+  // onSelectItem контролирует отображение и скрытие popup окна
   const onSelectItem = (index) => {
-    setActiveItem(index);
+    if (onClickSortType) onClickSortType(index);
     setVisiblePopup(false); // при выборе нужной категории (при клике на нее) popup окно скрывается
   };
 
-  const activeLabel = items[activeItem].name; // при выборе нужной категории (при клике на нее) отображается выбранная категория
+  const activeLabel = items.find((obj) => obj.type === activeSortType).name;
 
   return (
     // ref={sortRef} - короткая запись функции ref={(ref) => {sortRef.current = ref}} - в качестве параметра ref передаем в функцию "sort"
@@ -65,8 +70,8 @@ path является массивом. Например, при клике по
             {items &&
               items.map((obj, index) => (
                 <li
-                  className={activeItem === index ? "active" : ""}
-                  onClick={() => onSelectItem(index)}
+                  className={activeSortType === obj.type ? "active" : ""}
+                  onClick={() => onSelectItem(obj.type)}
                   key={`${obj.type}_${index}`}
                 >
                   {obj.name}
@@ -78,5 +83,15 @@ path является массивом. Например, при клике по
     </div>
   );
 });
+
+SortPopup.propTypes = {
+  items: PropTypes.arrayOf(PropTypes.object).isRequired, // массив объектов
+  activeSortType: PropTypes.string.isRequired,
+  onClickSortType: PropTypes.func.isRequired,
+};
+
+SortPopup.defaultProps = {
+  items: [],
+};
 
 export default SortPopup;

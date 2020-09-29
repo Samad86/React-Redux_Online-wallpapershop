@@ -7,7 +7,7 @@ import {
   WallpaperBlock,
   WallpaperLoadingBlock,
 } from "../components";
-import { setCategory } from "../redux/actions/filters";
+import { setCategory, setSortBy } from "../redux/actions/filters";
 import { fetchWallpapers } from "../redux/actions/wallpapers";
 
 const categoryNames = ["Бумага", "Флизелин", "Винил", "Акрил", "Текстиль"]; // выносим массив категорий, чтобы предотвратить ненужный ререндер. В items в функции Home() теперь всегда будет храниться одна и та же ссылка (даже когда компонент Home произведет ререндер)
@@ -35,17 +35,29 @@ function Home() {
 
   useEffect(() => {
     dispatch(fetchWallpapers());
-  }, []); // выполнение эффекта только 1 раз при первом рендере (отправка экшена). dispatch выполняет асинхронный экшен fetchWallpapers, который возвращает функцию
+  }, [category, sortBy]); // выполнение эффекта только 1 раз при первом рендере (отправка экшена). dispatch выполняет асинхронный экшен fetchWallpapers, который возвращает функцию
 
   const onSelectCategory = useCallback((index) => {
     dispatch(setCategory(index));
   }, []); // при первом рендере создается ссылка на функцию onSelectCategory и больше не меняется, предотвращается ненужный ререндер
 
+  const onSelectSortType = useCallback((type) => {
+    dispatch(setSortBy(type));
+  }, []);
+
   return (
     <div className="container">
       <div className="content__top">
-        <Categories onClickItem={onSelectCategory} items={categoryNames} />
-        <SortPopup items={sortItems} />
+        <Categories
+          activeCategory={category}
+          onClickCategory={onSelectCategory}
+          items={categoryNames}
+        />
+        <SortPopup
+          activeSortType={sortBy}
+          items={sortItems}
+          onClickSortType={onSelectSortType}
+        />
       </div>
       <h2 className="content__title">Все обои</h2>
       <div className="content__items">

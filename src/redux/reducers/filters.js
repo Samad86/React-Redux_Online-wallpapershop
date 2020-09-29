@@ -1,5 +1,5 @@
 const initialState = {
-  category: 0,
+  category: null,
   sortBy: "popular",
 }; // хранит в себе сортировку (по популярности, цене, алфавиту) и категории
 

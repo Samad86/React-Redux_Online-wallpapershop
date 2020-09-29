@@ -5,13 +5,24 @@ const initialState = {
 // при помощи isLoaded проверяем, произошла ли загрузка успешно
 
 const wallpapers = (state = initialState, action) => {
-  if (action.type === "SET_WALLPAPERS") {
-    return {
-      ...state,
-      items: action.payload, // массив всех обоев
-      isLoaded: true,
-    };
+  switch (action.type) {
+    case "SET_WALLPAPERS":
+      return {
+        ...state,
+        items: action.payload, // массив всех обоев
+        isLoaded: true,
+      };
+
+    case "SET_LOADED":
+      return {
+        ...state,
+        isLoaded: action.payload,
+      };
+
+    default:
+      return state;
   }
+
   return state; // если редьюсер обновлять не нужно (условие if не сработает, то вернутся старые данные)
 };
 
