@@ -13,9 +13,9 @@ import { fetchWallpapers } from "../redux/actions/wallpapers";
 const categoryNames = ["Бумага", "Флизелин", "Винил", "Акрил", "Текстиль"]; // выносим массив категорий, чтобы предотвратить ненужный ререндер. В items в функции Home() теперь всегда будет храниться одна и та же ссылка (даже когда компонент Home произведет ререндер)
 
 const sortItems = [
-  { name: "популярности", type: "popular" },
-  { name: "цене", type: "price" },
-  { name: "алфавиту", type: "alphabet" },
+  { name: "популярности", type: "popular", order: "desc" },
+  { name: "цене", type: "price", order: "desc" },
+  { name: "алфавиту", type: "name", order: "asc" },
 ];
 
 function Home() {
@@ -34,7 +34,7 @@ function Home() {
   // В useEffect следим за свойствами category и sortBy.
 
   useEffect(() => {
-    dispatch(fetchWallpapers());
+    dispatch(fetchWallpapers(sortBy, category));
   }, [category, sortBy]); // выполнение эффекта только 1 раз при первом рендере (отправка экшена). dispatch выполняет асинхронный экшен fetchWallpapers, который возвращает функцию
 
   const onSelectCategory = useCallback((index) => {
@@ -54,7 +54,7 @@ function Home() {
           items={categoryNames}
         />
         <SortPopup
-          activeSortType={sortBy}
+          activeSortType={sortBy.type}
           items={sortItems}
           onClickSortType={onSelectSortType}
         />

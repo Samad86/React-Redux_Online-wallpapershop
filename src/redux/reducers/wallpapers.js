@@ -20,10 +20,8 @@ const wallpapers = (state = initialState, action) => {
       };
 
     default:
-      return state;
+      return state; // если редьюсер обновлять не нужно (условие if не сработает, то вернутся старые данные)
   }
-
-  return state; // если редьюсер обновлять не нужно (условие if не сработает, то вернутся старые данные)
 };
 
 export default wallpapers;

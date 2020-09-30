@@ -1,6 +1,6 @@
-export const setSortBy = (name) => ({
+export const setSortBy = ({ type, order }) => ({
   type: "SET_SORT_BY",
-  payload: name,
+  payload: { type, order },
 }); // Action Creator - функция, которая возвращает объект action, принимает динамические данные (name) и прокидывает их в action
 
 export const setCategory = (catIndex) => ({

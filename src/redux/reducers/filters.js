@@ -1,6 +1,9 @@
 const initialState = {
   category: null,
-  sortBy: "popular",
+  sortBy: {
+    type: "popular",
+    order: "desc",
+  },
 }; // хранит в себе сортировку (по популярности, цене, алфавиту) и категории
 
 const filters = (state = initialState, action) => {
